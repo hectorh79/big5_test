@@ -72,6 +72,39 @@ function initApp() {
   // Iniciar cliente Supabase si ya hay credenciales
   initSupabaseClient();
 
+  // Control de Acceso: El botón de admin está oculto para visitantes comunes
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAdminParam = urlParams.get("admin") === "1" || urlParams.get("admin") === "true";
+  
+  function revealAdminButton() {
+    if (btnConfig) {
+      btnConfig.classList.remove("hidden");
+      btnConfig.classList.add("flex");
+    }
+  }
+
+  // 1. Mostrar si se accede con ?admin=1 en la URL
+  if (isAdminParam) {
+    revealAdminButton();
+  }
+
+  // 2. Mostrar si haces 4 clics seguidos en el logo de la cabecera
+  const appLogo = document.getElementById("app-logo");
+  let logoClicks = 0;
+  let logoTimer = null;
+  if (appLogo) {
+    appLogo.addEventListener("click", () => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
+      if (logoClicks >= 4) {
+        revealAdminButton();
+        showNotification("Modo Administrador visible", "info");
+        logoClicks = 0;
+      }
+    });
+  }
+
   if (btnConfig) {
     btnConfig.addEventListener("click", () => {
       if (inputSupabaseUrl) inputSupabaseUrl.value = state.supabaseUrl;
