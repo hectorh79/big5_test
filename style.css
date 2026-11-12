@@ -1,0 +1,67 @@
+/* Estilos personalizados y reglas de impresión para el Test Big 5 */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Transiciones suaves para tarjetas de opciones */
+.likert-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.likert-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Efecto de foco en la pregunta activa */
+.question-card {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.question-card:focus-within {
+  border-color: #6366F1;
+}
+
+/* Configuración de Impresión / Exportación a PDF */
+@media print {
+  body {
+    background: white !important;
+    color: #111827 !important;
+    font-size: 12pt;
+  }
+
+  /* Ocultar elementos de navegación y botones no deseados en el PDF */
+  header,
+  footer,
+  .no-print,
+  #screen-intro,
+  #screen-quiz,
+  #admin-panel-modal,
+  .btn-action-group {
+    display: none !important;
+  }
+
+  #screen-results {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-shadow-none {
+    box-shadow: none !important;
+    border: 1px solid #E5E7EB !important;
+  }
+
+  /* Asegurar que los colores y fondos se impriman */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
