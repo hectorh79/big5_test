@@ -251,8 +251,12 @@
   </main>
 
   <!-- ================= PIE DE PÁGINA GENERAL ================= -->
-  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 no-print">
-    Big Five Personality Assessment · Implementación Web Autónoma
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 no-print flex items-center justify-center gap-2">
+    <span>Big Five Personality Assessment · Implementación Web Autónoma</span>
+    <!-- Candado discreto de acceso exclusivo de administrador -->
+    <button id="btn-footer-admin" type="button" class="text-slate-300 hover:text-slate-500 transition-colors p-1" title="Panel de Administración">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    </button>
   </footer>
 
   <!-- ================= MODAL DE CONFIGURACIÓN & EXPORTACIÓN ================= -->

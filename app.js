@@ -72,52 +72,81 @@ function initApp() {
   // Iniciar cliente Supabase si ya hay credenciales
   initSupabaseClient();
 
-  // Control de Acceso: El botón de admin está oculto para visitantes comunes
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAdminParam = urlParams.get("admin") === "1" || urlParams.get("admin") === "true";
-  
-  function revealAdminButton() {
-    if (btnConfig) {
-      btnConfig.classList.remove("hidden");
-      btnConfig.classList.add("flex");
+  const btnFooterAdmin = document.getElementById("btn-footer-admin");
+
+  function openAdminModal() {
+    if (inputSupabaseUrl) inputSupabaseUrl.value = state.supabaseUrl;
+    if (inputSupabaseKey) inputSupabaseKey.value = state.supabaseAnonKey;
+    if (inputWebhook) inputWebhook.value = state.webhookUrl;
+    updateSubmissionsCount();
+    if (modalConfig) {
+      modalConfig.classList.remove("hidden");
+      modalConfig.style.display = "flex";
     }
   }
 
-  // 1. Mostrar si se accede con ?admin=1 en la URL
-  if (isAdminParam) {
-    revealAdminButton();
+  function closeAdminModal() {
+    if (modalConfig) {
+      modalConfig.classList.add("hidden");
+      modalConfig.style.display = "none";
+    }
   }
 
-  // 2. Mostrar si haces 4 clics seguidos en el logo de la cabecera
+  function revealAdminButton() {
+    if (btnConfig) {
+      btnConfig.classList.remove("hidden");
+      btnConfig.style.display = "inline-flex";
+    }
+  }
+
+  // 1. Acceso mediante Candado discreto en el pie de página
+  if (btnFooterAdmin) {
+    btnFooterAdmin.addEventListener("click", () => {
+      openAdminModal();
+    });
+  }
+
+  // 2. Acceso por URL: si tiene #admin o ?admin=1
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("admin") === "1" || urlParams.get("admin") === "true" || window.location.hash === "#admin") {
+    revealAdminButton();
+    openAdminModal();
+  }
+
+  // 3. Atajo de teclado: Ctrl + Shift + A (o Cmd + Shift + A en Mac)
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "a" || e.key === "A")) {
+      e.preventDefault();
+      revealAdminButton();
+      openAdminModal();
+      showNotification("Modo Administrador activado", "info");
+    }
+  });
+
+  // 4. Doble clic en el logo morado
   const appLogo = document.getElementById("app-logo");
-  let logoClicks = 0;
-  let logoTimer = null;
   if (appLogo) {
-    appLogo.addEventListener("click", () => {
-      logoClicks++;
-      clearTimeout(logoTimer);
-      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
-      if (logoClicks >= 4) {
-        revealAdminButton();
-        showNotification("Modo Administrador visible", "info");
-        logoClicks = 0;
-      }
+    appLogo.addEventListener("dblclick", () => {
+      revealAdminButton();
+      openAdminModal();
+      showNotification("Modo Administrador activado", "info");
     });
   }
 
   if (btnConfig) {
-    btnConfig.addEventListener("click", () => {
-      if (inputSupabaseUrl) inputSupabaseUrl.value = state.supabaseUrl;
-      if (inputSupabaseKey) inputSupabaseKey.value = state.supabaseAnonKey;
-      if (inputWebhook) inputWebhook.value = state.webhookUrl;
-      updateSubmissionsCount();
-      modalConfig.classList.remove("hidden");
-    });
+    btnConfig.addEventListener("click", openAdminModal);
   }
 
   if (btnCloseModal) {
-    btnCloseModal.addEventListener("click", () => {
-      modalConfig.classList.add("hidden");
+    btnCloseModal.addEventListener("click", closeAdminModal);
+  }
+
+  // Cerrar modal al hacer clic en el fondo oscuro
+  if (modalConfig) {
+    modalConfig.addEventListener("click", (e) => {
+      if (e.target === modalConfig) {
+        closeAdminModal();
+      }
     });
   }
 
@@ -130,7 +159,7 @@ function initApp() {
       localStorage.setItem("big5_supabase_key", state.supabaseAnonKey);
       initSupabaseClient();
       showNotification("¡Conexión con Supabase guardada exitosamente!", "success");
-      modalConfig.classList.add("hidden");
+      closeAdminModal();
     });
   }
 
@@ -140,7 +169,7 @@ function initApp() {
       state.webhookUrl = inputWebhook.value.trim();
       localStorage.setItem("big5_webhook_url", state.webhookUrl);
       showNotification("Configuración de Google Sheets guardada.");
-      modalConfig.classList.add("hidden");
+      closeAdminModal();
     });
   }
 
